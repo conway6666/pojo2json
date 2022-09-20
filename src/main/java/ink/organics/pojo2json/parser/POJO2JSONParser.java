@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public abstract class POJO2JSONParser {
 
 
+    public static final String[] ANNOTATION_CLASS_NAMES = new String[]{"com.alibaba.fastjson.annotation.JSONField", "core.framework.api.json.Property", "core.framework.mongo.Field"};
     private final GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
 
     private final Map<String, SpecifyType> specifyTypes = new HashMap<>();
@@ -131,7 +132,8 @@ public abstract class POJO2JSONParser {
             }
         }
 
-        annotation = field.getAnnotation("com.alibaba.fastjson.annotation.JSONField");
+        annotation = Arrays.stream(ANNOTATION_CLASS_NAMES).map(field::getAnnotation).filter(Objects::nonNull).findFirst().orElse(null);
+
         if (annotation != null) {
             String fieldName = POJO2JSONParserUtils.psiTextToString(annotation.findAttributeValue("name").getText());
             if (StringUtils.isNotBlank(fieldName)) {
